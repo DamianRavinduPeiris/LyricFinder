@@ -6,6 +6,7 @@ import { useState } from "react";
 import axios from "axios";
 import Loader from "./Loader";
 import { LyricHolder } from "./LyricHolder";
+import toast, { Toaster } from "react-hot-toast";
 
 export function HomePage() {
   const [aName, setAName] = useState<string>("");
@@ -15,7 +16,8 @@ export function HomePage() {
   const [lyrics, setLyrics] = useState<string>("");
 
   return (
-    <div className="flex flex-col min-h-[100dvh] bg-gray-100 dark:bg-gray-950">
+    <div className="flex flex-col min-h-[100dvh] ">
+      <Toaster />
       <header className="px-4 lg:px-6 h-14 flex items-center bg-transparent">
         <Link className="flex items-center justify-center" href="#">
           <MusicIcon className="h-6 w-6 text-gray-950 dark:text-gray-50" />
@@ -35,51 +37,73 @@ export function HomePage() {
             </p>
           </div>
           {isLoading ? <Loader /> : null}
-          <form className="grid gap-4">
-            <Input
-              placeholder="Artist Name."
-              type="text"
-              onChange={(e) => {
-                setAName(e.target.value);
-              }}
-            />
-            <Input
-              placeholder="Song Name."
-              type="text"
-              onChange={(e) => {
-                setSName(e.target.value);
-              }}
-            />
-            <Button
-              onClick={async (e) => {
-                setLoadingStatus(true);
-                setSearchStatus(true);
-                e.preventDefault();
-                try {
-                  console.log(
-                    "url : ",
-                    process.env.NEXT_PUBLIC_LYRICS_OVH_URL + `${aName}/${sName}`
-                  );
-                  let res = await axios.get(
-                    process.env.NEXT_PUBLIC_LYRICS_OVH_URL + `${aName}/${sName}`
-                  );
-                  console.log("lyrics", res.data.lyrics);
-                  setLyrics(res.data.lyrics);
-                  setLoadingStatus(false);
-                } catch (error) {
-                  console.log("An error occurred : ", error);
-                }
-              }}
-            >
-              Search
-            </Button>
-            
-          </form>
-          
+          {!isSearched ? (
+            <form className="grid gap-4">
+              <Input
+                placeholder="Artist Name."
+                type="text"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    document.querySelectorAll("input")[1].focus();
+                  }
+                }}
+                onChange={(e) => {
+                  setAName(e.target.value);
+                }}
+              />
+              <Input
+                placeholder="Song Name."
+                type="text"
+                onChange={(e) => {
+                  setSName(e.target.value);
+                }}
+              />
+              <Button
+                onClick={async (e) => {
+                  if (aName === "" || sName === "") {
+                    toast.error("Please enter both Artist and Song names!.");
+                    e.preventDefault();
+                    return;
+                  }
+                  setLoadingStatus(true);
+                  e.preventDefault();
+                  try {
+                    console.log(
+                      "url : ",
+                      process.env.NEXT_PUBLIC_LYRICS_OVH_URL +
+                        `${aName}/${sName}`
+                    );
+                    let res = await axios.get(
+                      process.env.NEXT_PUBLIC_LYRICS_OVH_URL +
+                        `${aName}/${sName}`
+                    );
+                    console.log("lyrics", res.data.lyrics);
+                    setLyrics(
+                      res.data.lyrics
+                        .replace(/Paroles de la chanson/g, "")
+                        .trim()
+                    );
+                    setLoadingStatus(false);
+                    setSearchStatus(true);
+                  } catch (error) {
+                    setLoadingStatus(false);
+
+                    toast.error("An error occurred. Please try again later.");
+                    console.log("An error occurred : ", error);
+                  }
+                }}
+              >
+                Search
+              </Button>
+            </form>
+          ) : (
+            <LyricHolder lyrics={lyrics} sName={sName} aName={aName} />
+          )}
         </div>
       </main>
-      {isSearched ? <LyricHolder lyrics={lyrics} /> : null}
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-gray-300 dark:border-gray-800">
+
+      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 ">
         <p className="text-xs text-gray-600 dark:text-gray-400">
           Made with ❤️ by Damian.
         </p>
@@ -102,7 +126,7 @@ export function HomePage() {
   );
 }
 
-function MusicIcon(props) {
+function MusicIcon(props: any) {
   return (
     <svg
       {...props}
