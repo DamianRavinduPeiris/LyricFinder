@@ -2,15 +2,20 @@
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
+import { useState } from "react";
+
 
 export function HomePage() {
+  const[aName,setAName]=useState<string>('')
+  const[sName,setSName]=useState<string>('')
   
   return (
     <div className="flex flex-col min-h-[100dvh] bg-gray-100 dark:bg-gray-950">
+      
       <header className="px-4 lg:px-6 h-14 flex items-center bg-transparent">
         <Link className="flex items-center justify-center" href="#">
           <MusicIcon className="h-6 w-6 text-gray-950 dark:text-gray-50" />
-          <span className="sr-only">Lyric Findr</span>
+          <span className="sr-only">Lyric Findr </span>
         </Link>
         <h1 className="text-2xl font-bold text-gray-950 dark:text-gray-50 ml-4"></h1>
       </header>
@@ -26,11 +31,18 @@ export function HomePage() {
             </p>
           </div>
           <form className="grid gap-4">
-            <Input placeholder="Artist Name." type="text" />
-            <Input placeholder="Song Name." type="text" />
+            <Input placeholder="Artist Name." type="text" onChange={(e)=>{
+              setAName(e.target.value)
+            }} />
+            <Input placeholder="Song Name." type="text"
+            onChange={(e)=>{
+              setSName(e.target.value)
+            }}
+             />
             <Button
               onClick={() => {
-                alert("Search button clicked");
+                
+
               }}
             >
               Search
