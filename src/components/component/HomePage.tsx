@@ -3,15 +3,19 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "../ui/button";
 import { useState } from "react";
-
+import axios from "axios";
+import Loader from "./Loader";
+import { LyricHolder } from "./LyricHolder";
 
 export function HomePage() {
-  const[aName,setAName]=useState<string>('')
-  const[sName,setSName]=useState<string>('')
-  
+  const [aName, setAName] = useState<string>("");
+  const [sName, setSName] = useState<string>("");
+  const [isLoading, setLoadingStatus] = useState<boolean>(false);
+  const [isSearched, setSearchStatus] = useState<boolean>(false);
+  const [lyrics, setLyrics] = useState<string>("");
+
   return (
     <div className="flex flex-col min-h-[100dvh] bg-gray-100 dark:bg-gray-950">
-      
       <header className="px-4 lg:px-6 h-14 flex items-center bg-transparent">
         <Link className="flex items-center justify-center" href="#">
           <MusicIcon className="h-6 w-6 text-gray-950 dark:text-gray-50" />
@@ -30,26 +34,51 @@ export function HomePage() {
               you're looking for.
             </p>
           </div>
+          {isLoading ? <Loader /> : null}
           <form className="grid gap-4">
-            <Input placeholder="Artist Name." type="text" onChange={(e)=>{
-              setAName(e.target.value)
-            }} />
-            <Input placeholder="Song Name." type="text"
-            onChange={(e)=>{
-              setSName(e.target.value)
-            }}
-             />
+            <Input
+              placeholder="Artist Name."
+              type="text"
+              onChange={(e) => {
+                setAName(e.target.value);
+              }}
+            />
+            <Input
+              placeholder="Song Name."
+              type="text"
+              onChange={(e) => {
+                setSName(e.target.value);
+              }}
+            />
             <Button
-              onClick={() => {
-                
-
+              onClick={async (e) => {
+                setLoadingStatus(true);
+                setSearchStatus(true);
+                e.preventDefault();
+                try {
+                  console.log(
+                    "url : ",
+                    process.env.NEXT_PUBLIC_LYRICS_OVH_URL + `${aName}/${sName}`
+                  );
+                  let res = await axios.get(
+                    process.env.NEXT_PUBLIC_LYRICS_OVH_URL + `${aName}/${sName}`
+                  );
+                  console.log("lyrics", res.data.lyrics);
+                  setLyrics(res.data.lyrics);
+                  setLoadingStatus(false);
+                } catch (error) {
+                  console.log("An error occurred : ", error);
+                }
               }}
             >
               Search
             </Button>
+            
           </form>
+          
         </div>
       </main>
+      {isSearched ? <LyricHolder lyrics={lyrics} /> : null}
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t border-gray-300 dark:border-gray-800">
         <p className="text-xs text-gray-600 dark:text-gray-400">
           Made with ❤️ by Damian.
