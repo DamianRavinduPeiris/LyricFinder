@@ -1,16 +1,14 @@
+ import { Button } from "@/components/ui/button"
 export function LyricHolder(props: {
   lyrics: string;
   sName: string;
   aName: string;
 }) {
-  // const formattedLyrics = props.lyrics.split('\n').map((line, index) => (
-  //   <p key={index} className="text-gray-600 dark:text-gray-400 text-center">
-  //     {line}
-  //   </p>
-  // ));
+
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen ">
+    <div className="mt-15 flex flex-col items-center justify-center h-screen ">
+    
       <h1 className="text-3xl font-bold tracking-tighter text-gray-950 dark:text-gray-50 sm:text-4xl md:text-5xl">
         {props.aName.charAt(0).toUpperCase() + props.aName.slice(1)}
       </h1>
@@ -26,7 +24,11 @@ export function LyricHolder(props: {
         <p className="text-gray-600 dark:text-gray-400 text-center">
           {props.lyrics}
         </p>
+        <div className="flex justify-center mt-8">
+        
+        </div>
       </div>
+      
     </div>
   );
 }

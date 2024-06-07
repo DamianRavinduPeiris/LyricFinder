@@ -14,6 +14,13 @@ export function HomePage() {
   const [isLoading, setLoadingStatus] = useState<boolean>(false);
   const [isSearched, setSearchStatus] = useState<boolean>(false);
   const [lyrics, setLyrics] = useState<string>("");
+  const formartLyrics = () => {
+    const formattedLyrics = lyrics.split("\n").map((line, index) => (
+      <p key={index} className="text-gray-600 dark:text-gray-400 text-center">
+        {line}
+      </p>
+    ));
+  };
 
   return (
     <div className="flex flex-col min-h-[100dvh] ">
@@ -28,13 +35,17 @@ export function HomePage() {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 md:py-24 lg:py-32">
         <div className="max-w-xl w-full space-y-6">
           <div className="text-center">
-            <h1 className="text-3xl font-bold tracking-tighter text-gray-950 dark:text-gray-50 sm:text-4xl md:text-5xl">
-              Lyric Findr
-            </h1>
-            <p className="mt-3 text-gray-600 dark:text-gray-400 max-w-md mx-auto text-base/relaxed">
-              Search for your favorite songs and artists to find the lyrics
-              you're looking for.
-            </p>
+            {!isSearched ? (
+              <>
+                <h1 className="text-3xl font-bold tracking-tighter text-gray-950 dark:text-gray-50 sm:text-4xl md:text-5xl">
+                  Lyric Findr
+                </h1>
+                <p className="mt-3 text-gray-600 dark:text-gray-400 max-w-md mx-auto text-base/relaxed">
+                  Search for your favorite songs and artists to find the lyrics
+                  you're looking for.
+                </p>
+              </>
+            ) : null}
           </div>
           {isLoading ? <Loader /> : null}
           {!isSearched ? (
@@ -89,7 +100,7 @@ export function HomePage() {
                   } catch (error) {
                     setLoadingStatus(false);
 
-                    toast.error("An error occurred. Please try again later.");
+                    toast.error("Lyrics were not found!");
                     console.log("An error occurred : ", error);
                   }
                 }}
@@ -98,30 +109,39 @@ export function HomePage() {
               </Button>
             </form>
           ) : (
-            <LyricHolder lyrics={lyrics} sName={sName} aName={aName} />
+            <>
+              <div className="flex justify-center mt-8 flex-col">
+                <h1 className="text-3xl font-bold tracking-tighter text-gray-950 dark:text-gray-50 sm:text-4xl md:text-5xl">
+                  {aName.charAt(0).toUpperCase() + aName.slice(1)}
+                </h1>
+
+                <h2 className="text-2xl mt-3 font-bold tracking-tighter text-gray-950 dark:text-gray-50 sm:text-4xl md:text-5xl">
+                  {sName.charAt(0).toUpperCase() + sName.slice(1)}
+                </h2>
+                <h3>
+                  {lyrics.split("\n").map((line, index) => (
+                    <p
+                      key={index}
+                      className="mt-3 text-gray-600 dark:text-gray-400 text-center"
+                    >
+                      {line}
+                    </p>
+                  ))}
+                </h3>
+
+                <Button
+                  onClick={() => {
+                    setSearchStatus(false);
+                    setLyrics("");
+                  }}
+                >
+                  Back
+                </Button>
+              </div>
+            </>
           )}
         </div>
       </main>
-
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 ">
-        <p className="text-xs text-gray-600 dark:text-gray-400">
-          Made with ❤️ by Damian.
-        </p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <Link
-            className="text-xs hover:underline underline-offset-4 text-gray-600 dark:text-gray-400"
-            href="https://github.com/DamianRavinduPeiris/LyricFinder"
-          >
-            Github.
-          </Link>
-          <Link
-            className="text-xs hover:underline underline-offset-4 text-gray-600 dark:text-gray-400"
-            href="https://ig.me/damian.peiris"
-          >
-            Instagram.
-          </Link>
-        </nav>
-      </footer>
     </div>
   );
 }
