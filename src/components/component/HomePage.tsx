@@ -38,7 +38,7 @@ export function HomePage() {
                 </h1>
                 <p className="mt-3 text-gray-600 dark:text-gray-400 max-w-md mx-auto text-base/relaxed">
                   Search for your favorite songs and artists to find the lyrics
-                  you're looking for.
+                  you are looking for.
                 </p>
                 </Bounce>
               </>
