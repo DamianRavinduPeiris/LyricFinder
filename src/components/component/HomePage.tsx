@@ -5,8 +5,8 @@ import { Button } from "../ui/button";
 import { useState } from "react";
 import axios from "axios";
 import Loader from "./Loader";
-import { LyricHolder } from "./LyricHolder";
 import toast, { Toaster } from "react-hot-toast";
+import { Bounce,AttentionSeeker } from "react-awesome-reveal";
 
 export function HomePage() {
   const [aName, setAName] = useState<string>("");
@@ -14,13 +14,7 @@ export function HomePage() {
   const [isLoading, setLoadingStatus] = useState<boolean>(false);
   const [isSearched, setSearchStatus] = useState<boolean>(false);
   const [lyrics, setLyrics] = useState<string>("");
-  const formartLyrics = () => {
-    const formattedLyrics = lyrics.split("\n").map((line, index) => (
-      <p key={index} className="text-gray-600 dark:text-gray-400 text-center">
-        {line}
-      </p>
-    ));
-  };
+  
 
   return (
     <div className="flex flex-col min-h-[100dvh] ">
@@ -37,6 +31,8 @@ export function HomePage() {
           <div className="text-center">
             {!isSearched ? (
               <>
+                <Bounce>
+                  
                 <h1 className="text-3xl font-bold tracking-tighter text-gray-950 dark:text-gray-50 sm:text-4xl md:text-5xl">
                   Lyric Findr
                 </h1>
@@ -44,11 +40,13 @@ export function HomePage() {
                   Search for your favorite songs and artists to find the lyrics
                   you're looking for.
                 </p>
+                </Bounce>
               </>
             ) : null}
           </div>
           {isLoading ? <Loader /> : null}
           {!isSearched ? (
+            <Bounce>
             <form className="grid gap-4">
               <Input
                 placeholder="Artist Name."
@@ -89,7 +87,7 @@ export function HomePage() {
                       process.env.NEXT_PUBLIC_LYRICS_OVH_URL +
                         `${aName}/${sName}`
                     );
-                    console.log("lyrics", res.data.lyrics);
+                    
                     setLyrics(
                       res.data.lyrics
                         .replace(/Paroles de la chanson/g, "")
@@ -99,37 +97,42 @@ export function HomePage() {
                     setSearchStatus(true);
                   } catch (error) {
                     setLoadingStatus(false);
-
                     toast.error("Lyrics were not found!");
-                    console.log("An error occurred : ", error);
                   }
                 }}
               >
                 Search
               </Button>
             </form>
+            </Bounce>
           ) : (
             <>
-              <div className="flex justify-center mt-8 flex-col">
-                <h1 className="text-3xl font-bold tracking-tighter text-gray-950 dark:text-gray-50 sm:text-4xl md:text-5xl">
+              <div className="flex justify-center mt-8 flex-col text-center">
+                <h1 className="mb-3 text-3xl font-bold tracking-tighter text-gray-950 dark:text-gray-50 sm:text-4xl md:text-5xl">
                   {aName.charAt(0).toUpperCase() + aName.slice(1)}
                 </h1>
 
-                <h2 className="text-2xl mt-3 font-bold tracking-tighter text-gray-950 dark:text-gray-50 sm:text-4xl md:text-5xl">
+                <h4 className="text-xl font-semibold text-gray-600 dark:text-gray-400">
                   {sName.charAt(0).toUpperCase() + sName.slice(1)}
-                </h2>
+                </h4>
                 <h3>
-                  {lyrics.split("\n").map((line, index) => (
-                    <p
-                      key={index}
-                      className="mt-3 text-gray-600 dark:text-gray-400 text-center"
-                    >
-                      {line}
-                    </p>
-                  ))}
+                {lyrics.split("\n")
+  .slice(1)
+  .map((line, index) => (
+    <>
+      <AttentionSeeker effect="rubberBand" triggerOnce={true}>
+        <p
+          key={index}
+          className="mt-3 text-gray-600 dark:text-gray-400 text-center"
+        >
+          {line}
+        </p>
+      </AttentionSeeker>
+    </>
+))}
                 </h3>
 
-                <Button
+                <Button className="mt-8"
                   onClick={() => {
                     setSearchStatus(false);
                     setLyrics("");
@@ -142,6 +145,10 @@ export function HomePage() {
           )}
         </div>
       </main>
+      <h3 className="text-center text-gray-600 dark:text-gray-400">
+        Made with ❤️ by Damian.
+        
+      </h3>
     </div>
   );
 }
